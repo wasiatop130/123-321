@@ -10,7 +10,6 @@ class Proxy(http.server.SimpleHTTPRequestHandler):
         # Forward HTTP GET requests
         url = self.path
         try:
-            # We construct a request to forward
             import urllib.request
             req = urllib.request.Request(url, headers=self.headers)
             with urllib.request.urlopen(req) as response:
@@ -24,7 +23,7 @@ class Proxy(http.server.SimpleHTTPRequestHandler):
             self.send_error(500, str(e))
 
     def do_CONNECT(self):
-        # Forward HTTPS CONNECT tunnel (essential for HTTPS traffic)
+        # Forward HTTPS CONNECT tunnel
         address = self.path.split(":")
         host = address[0]
         port = int(address[1])
@@ -48,6 +47,6 @@ class Proxy(http.server.SimpleHTTPRequestHandler):
         except Exception as e:
             self.send_error(500, str(e))
 
-with socketserver.TCPServer(("", PORT), Proxy) as httpd:
-    print(f"✅ HTTP Proxy Bridge is running on port {PORT}!")
+with socketserver.TCPServer(("127.0.0.1", PORT), Proxy) as httpd:
+    print(f"✅ Local HTTP Proxy is running on 127.0.0.1:{PORT}!")
     httpd.serve_forever()
